@@ -1,23 +1,30 @@
 import { useEffect, useState } from "react";
-import { Book } from "./types/Book";
+import { Book } from "../types/Book";
+import { useNavigate, useParams } from "react-router-dom";
+import { BookItem } from "../types/BookItem";
+import { useCart } from "../context/CartContext";
 
-function BookList() {
+function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<Book[]>([]);
   const [pageSize, setPageSize] = useState<number>(5);
   const [pageNum, setPageNum] = useState<number>(1);
-  const [totalItem, setTotalItem] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<string>(""); // New state for sorting
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchBooks = async () => {
+      const categoryParams = selectedCategories
+        .map((cat) => `categories=${encodeURIComponent(cat)}`)
+        .join("&");
       try {
         const response = await fetch(
-          `http://localhost:4000/api/Book/AllBooks?pageHowMany=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}`
+          `http://localhost:4000/api/Book/AllBooks?pageHowMany=${pageSize}&pageNum=${pageNum}${
+            categoryParams ? `&${categoryParams}` : ""
+          }`
         );
         const data = await response.json();
         setBooks(data.books);
-        setTotalItem(data.totalNumBooks);
         setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -25,22 +32,26 @@ function BookList() {
     };
 
     fetchBooks();
-  }, [pageSize, pageNum, sortBy]); // Include sortBy in the dependency array
+  }, [pageSize, pageNum, selectedCategories]);
+
+  const handleAddToCart = (book: Book) => {
+    const newItem: BookItem = {
+      bookID: Number(book.bookID),
+      title: book.title || "Unknown Project",
+      author: book.author,
+      price: book.price,
+      quantity: 1,
+    };
+    addToCart(newItem);
+  };
 
   return (
     <div>
       <h1>Books</h1>
       <br />
-      <label>
-        Sort by:
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="">None</option>
-          <option value="name">Book Name</option>
-        </select>
-      </label>
       <br />
       {books.map((p) => (
-        <div id="bookCard" className="card" key={p.bookId}>
+        <div id="bookCard" className="card" key={p.bookID}>
           <h2 className="card-title">{p.title}</h2>
           <div className="card-body">
             <ul className="list-unstyled">
@@ -57,7 +68,9 @@ function BookList() {
                 <strong>Classification:</strong> {p.classification}
               </li>
               <li>
-                <strong>Category:</strong> {p.category}
+                <strong>Category:</strong>{" "}
+                <span className="badge bg-info"></span>
+                {p.category}
               </li>
               <li>
                 <strong>Page Count:</strong> {p.pageCount}
@@ -66,13 +79,24 @@ function BookList() {
                 <strong>Price:</strong> {p.price}
               </li>
             </ul>
+            <button
+              className="btn btn-success"
+              onClick={() => {
+                // Call the function to add the item to the cart
+
+                handleAddToCart(p); // Navigate to the cart page
+              }}
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
       ))}
 
+      {/* Pagination */}
       <div>
         <button
-          className="btn btn-primary me-2" // Bootstrap styling for "Previous" button
+          className="btn btn-primary me-2"
           disabled={pageNum === 1}
           onClick={() => setPageNum(pageNum - 1)}
         >
@@ -82,9 +106,7 @@ function BookList() {
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index + 1}
-            className={`btn ${
-              pageNum === index + 1 ? "btn-secondary" : "btn-outline-primary"
-            } mx-1`} // Highlight current page and style others
+            className={`btn ${pageNum === index + 1 ? "btn-secondary" : "btn-outline-primary"} mx-1`}
             onClick={() => setPageNum(index + 1)}
           >
             {index + 1}
@@ -92,7 +114,7 @@ function BookList() {
         ))}
 
         <button
-          className="btn btn-primary ms-2" // Bootstrap styling for "Next" button
+          className="btn btn-primary ms-2"
           disabled={pageNum === totalPages || books.length < pageSize}
           onClick={() => setPageNum(pageNum + 1)}
         >
@@ -108,7 +130,7 @@ function BookList() {
           onChange={(p) => {
             const newSize = Number(p.target.value);
             setPageSize(newSize);
-            setPageNum(1); // Reset to first page when changing page size
+            setPageNum(1);
           }}
         >
           <option value="5">5</option>
