@@ -36,7 +36,6 @@ const AdminProjectsPage = () => {
       "Are you sure you want to delete this book?"
     );
     if (!confirmDelete) return;
-
     try {
       await deleteBook(bookID);
       setBooks(books.filter((book) => book.bookID !== bookID));
@@ -44,6 +43,9 @@ const AdminProjectsPage = () => {
       alert("Error deleting book");
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   // ✅ JSX return is correctly placed inside the component function
   return (

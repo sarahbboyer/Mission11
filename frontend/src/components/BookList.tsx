@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Book } from "../types/Book";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { BookItem } from "../types/BookItem";
 import { useCart } from "../context/CartContext";
 import { fetchBooks } from "../api/ProjectsAPI";
@@ -11,7 +11,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [pageSize, setPageSize] = useState<number>(5);
   const [pageNum, setPageNum] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { addToCart } = useCart();
 
   // Error handling
