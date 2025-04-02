@@ -4,6 +4,7 @@ using Mission11.API.Data;
 using System.Linq;
 using System.Collections.Generic;
 
+
 namespace Mission11.API.Controllers
 {
     [Route("api/[controller]")]
@@ -64,6 +65,47 @@ namespace Mission11.API.Controllers
                 .Distinct()
                 .ToList();
             return Ok(categories);
+        }
+        //this needs to match the front end
+        [HttpPost("AddBook")]
+        public IActionResult AddBook([FromBody] Books newBook)
+        {
+            _bookContext.Books.Add(newBook);
+            _bookContext.SaveChanges();
+            return Ok(newBook);
+        }
+        
+        [HttpPut("UpdateBook/{bookID}")]
+        public IActionResult UpdateBook(int bookID, [FromBody] Books updatedBook)
+        {
+            var existingBook = _bookContext.Books.Find(bookID);
+            
+            existingBook.BookID = updatedBook.BookID;
+            existingBook.Title = updatedBook.Title;
+            existingBook.ISBN = updatedBook.ISBN;
+            existingBook.Classification = updatedBook.Classification;
+            existingBook.Category = updatedBook.Category;
+            existingBook.PageCount = updatedBook.PageCount;
+            existingBook.Price = updatedBook.Price;
+            
+            _bookContext.Books.Update(existingBook);
+            _bookContext.SaveChanges();
+
+            return Ok(existingBook);
+        }
+        
+        [HttpDelete("DeleteBook/{bookID}")]
+        public IActionResult DeleteBook(int bookID)
+        {
+            var book = _bookContext.Books.Find(bookID);
+            if (book == null)
+            {
+                return NotFound(new { message = "Book not found" });
+            }
+            _bookContext.Books.Remove(book);
+            _bookContext.SaveChanges();
+            
+            return NoContent();
         }
     }
 }

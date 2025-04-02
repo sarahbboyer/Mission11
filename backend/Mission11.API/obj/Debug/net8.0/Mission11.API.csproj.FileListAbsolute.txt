@@ -126,3 +126,4 @@
 /Users/sarahboyer/Desktop/Mission11/backend/Mission11.API/obj/Debug/net8.0/Mission11.API.genruntimeconfig.cache
 /Users/sarahboyer/Desktop/Mission11/backend/Mission11.API/obj/Debug/net8.0/ref/Mission11.API.dll
 /Users/sarahboyer/Desktop/Mission11/backend/Mission11.API/obj/Debug/net8.0/Mission11.API.sourcelink.json
+/Users/sarahboyer/Desktop/Mission11/backend/Mission11.API/bin/Debug/net8.0/Bookstore.sqlite
