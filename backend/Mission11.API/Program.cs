@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000, https://jolly-bay-00664ca1e.6.azurestaticapps.net/")
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
