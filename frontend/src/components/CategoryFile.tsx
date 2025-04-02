@@ -16,7 +16,7 @@ function CategoryFile({
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4000/api/Book/GetBookCategories"
+          "https://books-sarah-again.azurewebsites.net/api/Book/GetBookCategories"
         );
         const data = await response.json();
         console.log("Fetched categories:", data);
